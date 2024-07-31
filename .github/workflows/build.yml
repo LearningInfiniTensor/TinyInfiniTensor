@@ -1,0 +1,25 @@
+name: Build and test cpu
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+  pull_request:
+    paths:
+      - '**.md'
+      - 'LICENSE'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Build
+      run: make
+
+    - name: Test cpu
+      run: make test-cpp
