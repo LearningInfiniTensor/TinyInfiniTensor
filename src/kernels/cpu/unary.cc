@@ -1,5 +1,4 @@
 #include "operators/unary.h"
-#include "core/constants.h"
 #include "core/kernel.h"
 
 namespace infini
