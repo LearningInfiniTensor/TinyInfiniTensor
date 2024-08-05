@@ -34,7 +34,7 @@ namespace infini
         // REF: https://onnx.ai/onnx/operators/onnx__Transpose.html#transpose-21
         // =================================== 作业 ===================================
 
-        return {{}};
+        return std::nullopt;
     }
 
     std::string TransposeObj::toString() const
