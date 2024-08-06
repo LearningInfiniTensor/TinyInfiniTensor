@@ -29,7 +29,7 @@ namespace infini
         g->print();
         EXPECT_EQ(g->getOperators().size(), 1);
         EXPECT_EQ(g->getTensors().size(), 3);
-        EXPECT_EQ(g->getOperators()[0]->getOpType().underlying(), 8);
+        EXPECT_EQ(g->getOperators()[0]->getOpType().underlying(), 7);
         auto op = as<MatmulObj>(g->getOperators()[0]);
         EXPECT_EQ(op->getInputs(0)->getGuid(), 2);
         EXPECT_EQ(op->getInputs(1)->getGuid(), 3);
