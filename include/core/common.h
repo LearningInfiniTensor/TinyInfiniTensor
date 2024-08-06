@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <variant>
 #include <vector>
+#include <cstdint>
 
 namespace infini {
 using std::list;
