@@ -1,5 +1,5 @@
 # Do not change these options in this file. Use cmake.config, cmake -DOPTION=VALUE, or ccmake to specify them.
-option(BUILD_TEST "Build tests" OFF)
+option(BUILD_TEST "Build tests" ON)
 
 cmake_minimum_required(VERSION 3.17)
 
