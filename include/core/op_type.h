@@ -23,7 +23,6 @@ namespace infini
             Relu,
             Sub,
             Transpose,
-
         } type;
 
         constexpr OpType(decltype(type) t) : type(t) {}
