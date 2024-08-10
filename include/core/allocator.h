@@ -16,7 +16,7 @@ namespace infini {
 
     size_t used;
 
-    size_t peak;
+    size_t  peak;
 
     size_t alignment;
 
