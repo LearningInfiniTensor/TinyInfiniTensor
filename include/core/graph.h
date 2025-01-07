@@ -2,8 +2,8 @@
 #include "core/allocator.h"
 #include "core/operator.h"
 #include "core/tensor.h"
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 
 namespace infini
 {
