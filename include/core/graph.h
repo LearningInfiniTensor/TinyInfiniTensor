@@ -3,117 +3,110 @@
 #include "core/operator.h"
 #include "core/tensor.h"
 
-namespace infini
-{
+#include <algorithm>
 
-    class GraphObj : public Object
-    {
-    protected:
-        Runtime runtime;
-        TensorVec tensors;
-        OpVec ops;
-        Allocator allocator;
+namespace infini {
 
-    public:
-        explicit GraphObj(Runtime runtime)
-            : runtime(runtime), allocator(runtime), sorted(false){};
-        string toString() const override;
-        Runtime getRuntime() const { return runtime; }
+class GraphObj : public Object {
+protected:
+  Runtime runtime;
+  TensorVec tensors;
+  OpVec ops;
+  Allocator allocator;
 
-        Tensor addTensor(Shape dim, DataType dtype = DataType::Float32);
-        Tensor addTensor(const Tensor &tensor);
-        TensorVec addTensor(const TensorVec &tensors);
-        void removeOperator(Operator op)
-        {
-            auto it = std::find(ops.begin(), ops.end(), op);
-            if (it != ops.end())
-                ops.erase(it);
-        }
+public:
+  explicit GraphObj(Runtime runtime)
+      : runtime(runtime), allocator(runtime), sorted(false) {};
+  string toString() const override;
+  Runtime getRuntime() const { return runtime; }
 
-        void removeTensor(Tensor tensor)
-        {
-            auto it = std::find(tensors.begin(), tensors.end(), tensor);
-            if (it != tensors.end())
-                tensors.erase(it);
-        }
+  Tensor addTensor(Shape dim, DataType dtype = DataType::Float32);
+  Tensor addTensor(const Tensor &tensor);
+  TensorVec addTensor(const TensorVec &tensors);
+  void removeOperator(Operator op) {
+    auto it = std::find(ops.begin(), ops.end(), op);
+    if (it != ops.end())
+      ops.erase(it);
+  }
 
-        const TensorVec &getTensors() const { return tensors; }
-        const OpVec &getOperators() const { return ops; }
-        Tensor getTensor(int) const;
+  void removeTensor(Tensor tensor) {
+    auto it = std::find(tensors.begin(), tensors.end(), tensor);
+    if (it != tensors.end())
+      tensors.erase(it);
+  }
 
-        /**
-         * @brief Sort the nodes in topological order.
-         * It returns true if the sorting is successful.
-         * Otherwise false is returned, means that there are rings in the graph,
-         * so the topological sorting fails.
-         */
-        bool topo_sort();
+  const TensorVec &getTensors() const { return tensors; }
+  const OpVec &getOperators() const { return ops; }
+  Tensor getTensor(int) const;
 
-        void optimize();
+  /**
+   * @brief Sort the nodes in topological order.
+   * It returns true if the sorting is successful.
+   * Otherwise false is returned, means that there are rings in the graph,
+   * so the topological sorting fails.
+   */
+  bool topo_sort();
 
-        void shape_infer();
+  void optimize();
 
-        void dataMalloc();
+  void shape_infer();
 
-        /**
-         * @brief Add an operator and create its outputs. Output tensor arguments
-         * should be empty Refs (e.g., nullptr).
-         */
-        template <typename T, typename... Args>
-        Ref<T> addOp(Args &&...args)
-        {
-            Ref<T> op = infini::make_ref<T>(this, std::forward<Args>(args)...);
-            addOperatorAndConnect(op);
-            return op;
-        }
+  void dataMalloc();
 
-        /**
-         * @brief Add an operator with its outputs specified.
-         */
-        template <typename T, typename... Args>
-        Ref<T> addOpWithOutputs(Args &&...args)
-        {
-            Ref<T> op = infini::make_ref<T>(nullptr, std::forward<Args>(args)...);
-            addOperatorAndConnect(op);
-            return op;
-        }
+  /**
+   * @brief Add an operator and create its outputs. Output tensor arguments
+   * should be empty Refs (e.g., nullptr).
+   */
+  template <typename T, typename... Args> Ref<T> addOp(Args &&...args) {
+    Ref<T> op = infini::make_ref<T>(this, std::forward<Args>(args)...);
+    addOperatorAndConnect(op);
+    return op;
+  }
 
-        /**
-         * @brief Gets input tensors of this graph.
-         */
-        inline TensorVec getInputs() const
-        {
-            TensorVec ret;
-            for (const auto &t : tensors)
-                if (!t->getSource())
-                    ret.emplace_back(t);
-            return ret;
-        }
+  /**
+   * @brief Add an operator with its outputs specified.
+   */
+  template <typename T, typename... Args>
+  Ref<T> addOpWithOutputs(Args &&...args) {
+    Ref<T> op = infini::make_ref<T>(nullptr, std::forward<Args>(args)...);
+    addOperatorAndConnect(op);
+    return op;
+  }
 
-        /**
-         * @brief Gets output tensors of this graph.
-         */
-        inline TensorVec getOutputs() const
-        {
-            TensorVec ret;
-            for (const auto &t : tensors)
-                if (t->getTargets().empty())
-                    ret.emplace_back(t);
-            return ret;
-        }
+  /**
+   * @brief Gets input tensors of this graph.
+   */
+  inline TensorVec getInputs() const {
+    TensorVec ret;
+    for (const auto &t : tensors)
+      if (!t->getSource())
+        ret.emplace_back(t);
+    return ret;
+  }
 
-        bool checkValid() const;
+  /**
+   * @brief Gets output tensors of this graph.
+   */
+  inline TensorVec getOutputs() const {
+    TensorVec ret;
+    for (const auto &t : tensors)
+      if (t->getTargets().empty())
+        ret.emplace_back(t);
+    return ret;
+  }
 
-    private:
-        /**
-         * @brief Add reverse connections and Op relationship in ctor.
-         */
-        void addOperatorAndConnect(const Operator &op);
+  bool checkValid() const;
 
-        /**
-         * @brief If the nodes is sorted in topological order.
-         */
-        bool sorted;
-    };
+private:
+  /**
+   * @brief Add reverse connections and Op relationship in ctor.
+   */
+  void addOperatorAndConnect(const Operator &op);
+
+  /**
+   * @brief If the nodes is sorted in topological order.
+   */
+  bool sorted;
+};
 
 } // namespace infini
