@@ -57,4 +57,3 @@ namespace infini {
     size_t getAlignedSize(size_t size);
   };
 }
-//////
